@@ -162,7 +162,14 @@
                           {{ result.journal }}
                         </span>
                       </div>
+                      <!-- add button for  view detail -->
                     </div>
+                    <button
+                      @click="gotoDocument(result.id)"
+                      class="mt-2 text-blue-400 hover:text-blue-300 transition-colors text-xs font-medium rounded-full px-4 py-1 border border-blue-500/50 hover:border-blue-500/70 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-white cursor-pointer" 
+                    >
+                      Lihat Detail
+                    </button>
                   </div>
                 </div>
               </div>
@@ -292,7 +299,11 @@ const currentPage = ref(1)
 const itemsPerPage = 4
 
 const gotoPage = () => {
-    useRouter().push('/cekDokumen')
+  useRouter().push('/cekDokumen')
+}
+
+const gotoDocument = (id: string) => {
+  useRouter().push(`/doc/${id}`)
 }
 
 // Computed properties for pagination
@@ -458,7 +469,7 @@ const getParticleStyle = (index: number) => {
 }
 definePageMeta({
     title: 'DocuSearch - Pencarian Dokumen Cerdas',
-    description: 'DocuSearch adalah platform pencarian dokumen cerdas yang menggunakan teknologi BM25 dan Elasticsearch untuk memberikan hasil pencarian yang akurat dan relevan.'
+    description: 'DocuSearch adalah platform pencarian dokumen cerdas yang menggunakan teknologi BM25 dan Elasticsearch untuk memberikan hasil pencarian yang akurat dan relevan. Pencarian dokumen yang lebih cerdas dan lebih cepat.'
 })
 </script>
 

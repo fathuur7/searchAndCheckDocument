@@ -30,8 +30,8 @@
             </div>
             <div class="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl blur opacity-30 group-hover:opacity-70 transition duration-300"></div>
           </div>
-          <span class="text-3xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-            DocuCheck
+          <span class="text-3xl font-bold" :class="{'bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent': $route.path === '/'}">
+            {{ $route.path === '/' ? 'DocuSearch' : ($route.path === '/cekDokumen' ? 'DocuCheck' : 'Docu') }}
           </span>
         </div>
 

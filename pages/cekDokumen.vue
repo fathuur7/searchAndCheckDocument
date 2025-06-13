@@ -14,7 +14,7 @@
             Periksa originalitas dokumen Anda dengan teknologi AI canggih. 
             Dapatkan laporan detail tingkat kesamaan dan sumber referensi dalam hitungan detik.
             </p>
-
+            
             <!-- Upload Section -->
             <div class="relative group mb-12">
             <div class="relative bg-slate-900/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-8 max-w-2xl mx-auto">
