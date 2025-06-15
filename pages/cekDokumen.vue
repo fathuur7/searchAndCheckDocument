@@ -342,31 +342,50 @@ const resetAnalysis = () => {
 }
 
 // Helper functions untuk similarity results
-const getHighestSimilarity = () => {
-  if (!hasil.value?.similarity_results || hasil.value.similarity_results.length === 0) return 0
+// const getHighestSimilarity = () => {
+//   if (!hasil.value?.similarity_results || hasil.value.similarity_results.length === 0) return 0
   
-  // Filter out perfect matches (100%) yang biasanya adalah file yang sama
-  const filtered = hasil.value.similarity_results.filter(result => result.similarity_percentage < 100)
-  if (filtered.length === 0) return 0
+//   // Filter out perfect matches (100%) yang biasanya adalah file yang sama
+//   const filtered = hasil.value.similarity_results.filter(result => result.similarity_percentage < 100)
+//   if (filtered.length === 0) return 0
   
-  return Math.max(...filtered.map(result => result.similarity_percentage || 0))
+//   return Math.max(...filtered.map(result => result.similarity_percentage || 0))
+// }
+
+// const getSimilarSourcesCount = () => {
+//   if (!hasil.value?.similarity_results) return 0
+//   // Count results with similarity > 5% and not 100% (exclude self-match)
+//   return hasil.value.similarity_results.filter(result => 
+//     result.similarity_percentage > 5 && result.similarity_percentage < 100
+//   ).length
+// }
+
+interface SimilarityResult {
+  rank: number
+  filename: string
+  status: string
+  similarity_percentage: number
+  common_words?: { word: string; freq_text1: number; freq_text2: number }[]
+  common_phrases?: string[]
 }
 
-const getSimilarSourcesCount = () => {
-  if (!hasil.value?.similarity_results) return 0
-  // Count results with similarity > 5% and not 100% (exclude self-match)
-  return hasil.value.similarity_results.filter(result => 
-    result.similarity_percentage > 5 && result.similarity_percentage < 100
-  ).length
+interface HasilType {
+  similarity_results?: SimilarityResult[]
+  analysis_info?: {
+    user_file?: string
+    analysis_date?: string
+    total_files_processed?: number
+    top_results_shown?: number
+  }
 }
 
-const getFilteredResults = () => {
-  if (!hasil.value?.similarity_results) return []
+const getFilteredResults = (): SimilarityResult[] => {
+  if (!(hasil.value as HasilType)?.similarity_results) return []
   
   // Filter out perfect matches (100%) tetapi tetap gunakan rank asli
-  return hasil.value.similarity_results
-    .filter(result => result.similarity_percentage) // Hapus yang 100%
-    .sort((a, b) => a.rank - b.rank) // Urutkan berdasarkan rank asli (terkecil ke terbesar)
+  return ((hasil.value as HasilType).similarity_results as SimilarityResult[])
+    .filter((result: SimilarityResult) => result.similarity_percentage) // Hapus yang 100%
+    .sort((a: SimilarityResult, b: SimilarityResult) => a.rank - b.rank) // Urutkan berdasarkan rank asli (terkecil ke terbesar)
     .slice(0, 10) // Ambil 10 teratas
 }
 
