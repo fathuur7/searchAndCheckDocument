@@ -11,7 +11,7 @@
             </h1>
             
             <p class="text-xl md:text-2xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-            Periksa originalitas dokumen Anda dengan teknologi AI canggih. 
+            Periksa originalitas dokumen Anda dengan teknologi canggih. 
             Dapatkan laporan detail tingkat kesamaan dan sumber referensi dalam hitungan detik.
             </p>
             
@@ -49,6 +49,16 @@
                 </div>
                 </div>
 
+                <!-- Error Message -->
+                <div v-if="error" class="mt-6 p-4 bg-red-500/20 border border-red-500/30 rounded-xl">
+                <div class="flex items-center space-x-3">
+                    <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <p class="text-red-400">{{ error }}</p>
+                </div>
+                </div>
+
                 <!-- Selected File Display -->
                 <div v-if="selectedFile" class="mt-6 p-4 bg-slate-800/50 rounded-xl">
                 <div class="flex items-center justify-between">
@@ -74,15 +84,15 @@
                 <!-- Analyze Button -->
                 <button 
                 @click="analyzeDocument"
-                :disabled="!selectedFile || isAnalyzing"
+                :disabled="!selectedFile || loading"
                 :class="[
                     'w-full mt-6 py-4 px-8 rounded-xl font-semibold text-lg transition-all duration-300',
-                    selectedFile && !isAnalyzing 
+                    selectedFile && !loading 
                     ? 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105' 
                     : 'bg-gray-700 text-gray-400 cursor-not-allowed'
                 ]"
                 >
-                <span v-if="isAnalyzing" class="flex items-center justify-center space-x-2">
+                <span v-if="loading" class="flex items-center justify-center space-x-2">
                     <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="m4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -95,73 +105,96 @@
             </div>
 
             <!-- Results Section -->
-            <div v-if="showResults" class="animate-fade-in-up animation-delay-500">
+            <div v-if="hasil" class="animate-fade-in-up animation-delay-500">
             <div class="relative group mb-8">
-                <!-- <div class="absolute -inset-1 bg-gradient-to-r from-green-500 via-blue-500 to-purple-500 rounded-2xl blur opacity-20"></div> -->
                 <div class="relative bg-slate-900/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-8 max-w-4xl mx-auto">
                 
                 <h2 class="text-3xl font-bold mb-8 bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
                     Hasil Analisis Plagiarisme
                 </h2>
 
-                <!-- Similarity Score -->
-                <div class="grid md:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-slate-800/50 rounded-xl p-6 text-center">
-                    <div class="text-4xl font-bold mb-2" :class="getSimilarityColor(results.similarity)">
-                        {{ results.similarity }}%
-                    </div>
-                    <p class="text-gray-400">Tingkat Kesamaan</p>
-                    </div>
-                    <div class="bg-slate-800/50 rounded-xl p-6 text-center">
-                    <div class="text-4xl font-bold text-blue-400 mb-2">{{ results.sources }}</div>
-                    <p class="text-gray-400">Sumber Ditemukan</p>
-                    </div>
-                    <div class="bg-slate-800/50 rounded-xl p-6 text-center">
-                    <div class="text-4xl font-bold text-purple-400 mb-2">{{ results.originalityScore }}%</div>
-                    <p class="text-gray-400">Skor Originalitas</p>
+                <!-- Analysis Info -->
+                <div v-if="hasil.analysis_info" class="bg-slate-800/30 rounded-xl p-6 mb-8">
+                    <h3 class="text-xl font-semibold text-white mb-4">Informasi Analisis</h3>
+                    <div class="grid md:grid-cols-2 gap-4 text-gray-300">
+                        <div>
+                            <p><span class="font-medium text-blue-400">File yang dianalisis:</span> {{ hasil.analysis_info.user_file || selectedFile?.name || 'Unknown' }}</p>
+                            <p><span class="font-medium text-blue-400">Tanggal analisis:</span> {{ formatDate(hasil.analysis_info.analysis_date) }}</p>
+                        </div>
+                        <div>
+                            <p><span class="font-medium text-blue-400">Total file diproses:</span> {{ hasil.analysis_info.total_files_processed || 0 }}</p>
+                            <p><span class="font-medium text-blue-400">Top results ditampilkan:</span> {{ hasil.analysis_info.top_results_shown || 0 }}</p>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Status Badge -->
+                <!-- Status Badge
                 <div class="flex justify-center mb-6">
                     <div :class="[
                     'px-6 py-3 rounded-full font-semibold text-lg',
-                    getStatusClass(results.similarity)
+                    getStatusClass(getHighestSimilarity())
                     ]">
-                    {{ getStatusText(results.similarity) }}
+                    {{ getStatusText(getHighestSimilarity()) }}
                     </div>
-                </div>
+                </div> -->
 
-                <!-- Detailed Results -->
-                <div class="text-left space-y-4">
+                <!-- Similarity Results -->
+                <div v-if="hasil.similarity_results && hasil.similarity_results.length > 0" class="text-left space-y-4">
                     <div class="bg-slate-800/30 rounded-xl p-6">
-                    <h3 class="text-xl font-semibold text-white mb-4">Ringkasan Analisis</h3>
-                    <div class="grid md:grid-cols-2 gap-4 text-gray-300">
-                        <div>
-                        <p><span class="font-medium text-blue-400">Kata yang dianalisis:</span> {{ results.totalWords }}</p>
-                        <p><span class="font-medium text-blue-400">Paragraf yang cocok:</span> {{ results.matchedParagraphs }}</p>
-                        </div>
-                        <div>
-                        <p><span class="font-medium text-blue-400">Waktu analisis:</span> {{ results.analysisTime }}</p>
-                        <p><span class="font-medium text-blue-400">Database yang diperiksa:</span> {{ results.databasesChecked }}</p>
-                        </div>
-                    </div>
-                    </div>
-
-                    <div class="bg-slate-800/30 rounded-xl p-6">
-                    <h3 class="text-xl font-semibold text-white mb-4">Sumber Kesamaan Terdeteksi</h3>
+                    <h3 class="text-xl font-semibold text-white mb-4">Hasil Perbandingan Dokumen</h3>
                     <div class="space-y-3">
-                        <div v-for="source in results.detectedSources" :key="source.id" 
-                            class="flex items-center justify-between p-4 bg-slate-700/50 rounded-lg">
-                        <div>
-                            <p class="text-white font-medium">{{ source.title }}</p>
-                            <p class="text-gray-400 text-sm">{{ source.url }}</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-lg font-bold" :class="getSimilarityColor(source.similarity)">
-                            {{ source.similarity }}%
+                        <div v-for="(result, index) in getFilteredResults()" :key="index" 
+                            class="p-4 bg-slate-700/50 rounded-lg">
+                        
+                        <!-- Header Info -->
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex-1">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-sm bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full font-medium">
+                                  Rank #{{ result.rank }}
+                                </span>
+                                <p class="text-white font-medium">{{ result.filename }}</p>
+                            </div>
+                            <p class="text-gray-400 text-sm mt-1">Status: {{ result.status }}</p>
+                            </div>
+                            <div class="text-right ml-4">
+                            <p class="text-2xl font-bold" :class="getSimilarityColor(result.similarity_percentage)">
+                                {{ Math.round(result.similarity_percentage) }}%
                             </p>
                             <p class="text-gray-400 text-sm">kesamaan</p>
+                            </div>
+                        </div>
+
+                        <!-- Common Words -->
+                        <div v-if="result.common_words && result.common_words.length > 0" class="mb-3">
+                            <h5 class="text-sm font-medium text-gray-300 mb-2">Kata-kata Umum Terdeteksi:</h5>
+                            <div class="flex flex-wrap gap-2">
+                            <span v-for="(word, wordIndex) in result.common_words.slice(0, 10)" :key="wordIndex"
+                                class="text-xs bg-slate-600/50 text-gray-300 px-2 py-1 rounded">
+                                {{ word.word }} ({{ word.freq_text1 }}/{{ word.freq_text2 }})
+                            </span>
+                            </div>
+                        </div>
+
+                        <!-- Common Phrases -->
+                        <div v-if="result.common_phrases && result.common_phrases.length > 0" class="mb-3">
+                            <h5 class="text-sm font-medium text-gray-300 mb-2">Frasa Umum Terdeteksi:</h5>
+                            <div class="flex flex-wrap gap-2">
+                            <span v-for="(phrase, phraseIndex) in result.common_phrases" :key="phraseIndex"
+                                class="text-xs bg-amber-500/20 text-amber-300 px-2 py-1 rounded">
+                                "{{ phrase }}"
+                            </span>
+                            </div>
+                        </div>
+
+                        <!-- Similarity Score Bar -->
+                        <div class="mt-3">
+                            <div class="w-full bg-slate-600/30 rounded-full h-2">
+                            <div class="h-2 rounded-full transition-all duration-300" 
+                                :class="getSimilarityBarColor(result.similarity_percentage)"
+                                :style="{ width: result.similarity_percentage + '%' }">
+                            </div>
+                            </div>
                         </div>
                         </div>
                     </div>
@@ -182,7 +215,7 @@
             </div>
 
             <!-- Feature Highlights -->
-            <div v-if="!showResults" class="grid md:grid-cols-3 gap-8 mt-16 animate-fade-in-up animation-delay-800">
+            <div v-if="!hasil" class="grid md:grid-cols-3 gap-8 mt-16 animate-fade-in-up animation-delay-800">
             <div class="bg-slate-900/30 backdrop-blur-sm border border-slate-700/50 rounded-xl p-6 hover:bg-slate-900/50 transition-all duration-300 group">
                 <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -216,51 +249,22 @@
         </div>
         </main>
 </template>
+
 <script setup lang="ts">
     definePageMeta({
         layout: 'global',
     })
 
-import { ref, reactive } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const fileInput = ref<HTMLInputElement>()
 const selectedFile = ref<File | null>(null)
 const isDragging = ref(false)
-const isAnalyzing = ref(false)
-const showResults = ref(false)
 
-// Sample results data
-const results = reactive({
-  similarity: 23,
-  sources: 8,
-  originalityScore: 77,
-  totalWords: 2847,
-  matchedParagraphs: 12,
-  analysisTime: '3.2 detik',
-  databasesChecked: '50M+ dokumen',
-  detectedSources: [
-    {
-      id: 1,
-      title: 'Jurnal Penelitian Teknologi Informasi',
-      url: 'journal.example.com/article-123',
-      similarity: 15
-    },
-    {
-      id: 2,
-      title: 'Wikipedia - Artificial Intelligence',
-      url: 'wikipedia.org/wiki/artificial-intelligence',
-      similarity: 8
-    },
-    {
-      id: 3,
-      title: 'ResearchGate Publication',
-      url: 'researchgate.net/publication/12345',
-      similarity: 12
-    }
-  ]
-})
+// Use the useDokumen composable
+const { hasil, loading, error, compareDokumen } = useDokumen()
 
 const triggerFileUpload = () => {
   fileInput.value?.click()
@@ -302,30 +306,80 @@ const formatFileSize = (bytes: number) => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
 
+const formatDate = (dateString: string) => {
+  if (!dateString) return 'Unknown'
+  try {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('id-ID', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  } catch {
+    return dateString
+  }
+}
+
 const analyzeDocument = async () => {
   if (!selectedFile.value) return
   
-  isAnalyzing.value = true
-  
-  // Simulate analysis process
-  await new Promise(resolve => setTimeout(resolve, 3000))
-  
-  isAnalyzing.value = false
-  showResults.value = true
+  try {
+    await compareDokumen(selectedFile.value)
+  } catch (err) {
+    console.error('Analysis failed:', err)
+  }
 }
 
 const resetAnalysis = () => {
   selectedFile.value = null
-  showResults.value = false
+  hasil.value = null
+  error.value = null
   if (fileInput.value) {
     fileInput.value.value = ''
   }
+}
+
+// Helper functions untuk similarity results
+const getHighestSimilarity = () => {
+  if (!hasil.value?.similarity_results || hasil.value.similarity_results.length === 0) return 0
+  
+  // Filter out perfect matches (100%) yang biasanya adalah file yang sama
+  const filtered = hasil.value.similarity_results.filter(result => result.similarity_percentage < 100)
+  if (filtered.length === 0) return 0
+  
+  return Math.max(...filtered.map(result => result.similarity_percentage || 0))
+}
+
+const getSimilarSourcesCount = () => {
+  if (!hasil.value?.similarity_results) return 0
+  // Count results with similarity > 5% and not 100% (exclude self-match)
+  return hasil.value.similarity_results.filter(result => 
+    result.similarity_percentage > 5 && result.similarity_percentage < 100
+  ).length
+}
+
+const getFilteredResults = () => {
+  if (!hasil.value?.similarity_results) return []
+  
+  // Filter out perfect matches (100%) tetapi tetap gunakan rank asli
+  return hasil.value.similarity_results
+    .filter(result => result.similarity_percentage) // Hapus yang 100%
+    .sort((a, b) => a.rank - b.rank) // Urutkan berdasarkan rank asli (terkecil ke terbesar)
+    .slice(0, 10) // Ambil 10 teratas
 }
 
 const getSimilarityColor = (similarity: number) => {
   if (similarity >= 50) return 'text-red-400'
   if (similarity >= 25) return 'text-yellow-400'
   return 'text-green-400'
+}
+
+const getSimilarityBarColor = (similarity: number) => {
+  if (similarity >= 50) return 'bg-red-400'
+  if (similarity >= 25) return 'bg-yellow-400'
+  return 'bg-green-400'
 }
 
 const getStatusClass = (similarity: number) => {
@@ -340,16 +394,15 @@ const getStatusText = (similarity: number) => {
   return 'Dokumen Original'
 }
 
-// use seo
+// SEO
 useHead({
-  title: 'Cek Dokumen -DocuMen',
+  title: 'Cek Dokumen - DocuMen',
   meta: [
-    { name: 'description', content: 'Cek dokumen Anda untuk plagiarisme dengan akurasi tinggi menggunakan teknolog canggih. Dapatkan laporan detail dalam hitungan detik.' },
+    { name: 'description', content: 'Cek dokumen Anda untuk plagiarisme dengan akurasi tinggi menggunakan teknologi canggih. Dapatkan laporan detail dalam hitungan detik.' },
     { name: 'keywords', content: 'plagiarisme, cek dokumen, teknologi, analisis dokumen' },
     { name: 'author', content: 'DocuMEN' }
   ]
 })
-
 </script>
 
 <style scoped>
