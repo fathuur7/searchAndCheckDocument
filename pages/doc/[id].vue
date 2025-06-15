@@ -37,7 +37,7 @@
       <!-- Document Content -->
       <div v-else-if="document" class="space-y-8">
         <!-- Hero Header -->
-        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
+        <div class="bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 rounded-3xl shadow-2xl overflow-hidden">
           <div class="bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 px-8 py-12 text-white relative overflow-hidden">
             <!-- Decorative Elements -->
             <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-32 translate-x-32"></div>
@@ -48,60 +48,60 @@
               <div class="flex items-center justify-between mb-6">
                 <span class="inline-flex items-center bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium border border-white/30">
                   <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
                   </svg>
-                  arXiv:{{ $route.params.id }}
+                  ID: {{ document.id }}
                 </span>
                 
-                <!-- Quick Actions -->
-                <div class="flex space-x-3">
-                  <button 
-                    @click="downloadPDF"
-                    class="inline-flex items-center bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium border border-white/30 transition-all duration-300 transform hover:scale-105"
-                  >
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
-                    PDF
-                  </button>
-                  <button 
-                    @click="copyLink"
-                    class="inline-flex items-center bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium border border-white/30 transition-all duration-300 transform hover:scale-105"
-                  >
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"/>
-                    </svg>
-                    Share
-                  </button>
-                </div>
+                <!-- External Link Button -->
+                <button 
+                  v-if="document.url"
+                  @click="viewOriginalSource"
+                  class="inline-flex items-center bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium border border-white/30 hover:bg-white/30 transition-colors"
+                >
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                  </svg>
+                  Visit Source
+                </button>
               </div>
               
-              <!-- Title -->
+              <!-- Institution/Journal Name -->
               <h1 class="text-4xl lg:text-5xl font-bold leading-tight mb-6 text-white">
-                {{ document.title }}
+                {{ document.name }}
               </h1>
               
-              <!-- Authors -->
-              <div v-if="document.authors" class="mb-6">
+              <!-- Institution Info -->
+              <div v-if="document.institution" class="mb-6">
                 <div class="flex flex-wrap gap-3">
                   <div class="bg-white/15 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
                     <div class="flex items-center">
                       <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                       </svg>
-                      <span class="text-sm font-medium">{{ document.authors }}</span>
+                      <span class="text-sm font-medium">{{ document.institution }}</span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <!-- Submitter -->
-              <div v-if="document.submitter" class="text-white/80 text-sm">
+              <!-- Subject Area -->
+              <div v-if="document.subjectArea" class="text-white/80 text-sm mb-4">
+                <span class="inline-flex items-center">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                  </svg>
+                  Subject Area: {{ document.subjectArea }}
+                </span>
+              </div>
+
+              <!-- Accreditation -->
+              <div v-if="document.accreditation" class="text-white/80 text-sm">
                 <span class="inline-flex items-center">
                   <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
                   </svg>
-                  Submitted by: {{ document.submitter }}
+                  Accreditation: {{ document.accreditation }}
                 </span>
               </div>
             </div>
@@ -112,45 +112,79 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <!-- Main Content -->
           <div class="lg:col-span-2 space-y-8">
-            <!-- Abstract -->
-            <div v-if="document.abstract" class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+            <!-- Institution Image -->
+            <div v-if="document.imageUrl" class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
               <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-100">
                 <h2 class="text-xl font-bold text-gray-900 flex items-center">
                   <div class="bg-blue-100 rounded-lg p-2 mr-3">
                     <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                     </svg>
                   </div>
-                  Abstract
+                  Institution Image
                 </h2>
               </div>
               <div class="p-6">
-                <p class="text-gray-700 leading-relaxed text-lg">{{ document.abstract }}</p>
+                <img 
+                  :src="document.imageUrl" 
+                  :alt="document.name"
+                  class="w-full h-64 object-cover rounded-lg shadow-md"
+                  @error="handleImageError"
+                />
               </div>
             </div>
 
-            <!-- Highlights -->
-            <div v-if="document.highlight && Object.keys(document.highlight).length > 0" class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-              <div class="bg-gradient-to-r from-yellow-50 to-orange-50 px-6 py-4 border-b border-gray-100">
+            <!-- Articles Section -->
+            <div v-if="document.articles && document.articles.length > 0" class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+              <div class="bg-gradient-to-r from-green-50 to-emerald-50 px-6 py-4 border-b border-gray-100">
                 <h2 class="text-xl font-bold text-gray-900 flex items-center">
-                  <div class="bg-yellow-100 rounded-lg p-2 mr-3">
-                    <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                  <div class="bg-green-100 rounded-lg p-2 mr-3">
+                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
                     </svg>
                   </div>
-                  Key Highlights
+                  Published Articles ({{ document.articles.length }})
                 </h2>
               </div>
               <div class="p-6">
-                <div v-for="(highlights, field) in document.highlight" :key="field" class="mb-6 last:mb-0">
-                  <h3 class="font-semibold text-gray-900 capitalize mb-3 text-sm uppercase tracking-wide">{{ field }}:</h3>
-                  <div class="space-y-3">
-                    <div 
-                      v-for="(highlight, index) in highlights" 
-                      :key="index"
-                      class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg"
-                    >
-                      <p class="text-gray-700" v-html="highlight"></p>
+                <div class="space-y-4">
+                  <div 
+                    v-for="(article, index) in document.articles" 
+                    :key="index"
+                    class="bg-gray-50 border border-gray-200 rounded-xl p-4 hover:bg-gray-100 transition-colors"
+                  >
+                    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                      <div class="flex-1">
+                        <h3 class="font-semibold text-gray-900 mb-2">{{ article.title }}</h3>
+                        <div class="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                          <span class="flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                            </svg>
+                            {{ article.institution }}
+                          </span>
+                          <span class="flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            {{ article.year }}
+                          </span>
+                        </div>
+                      </div>
+                      <div class="flex items-center">
+                        <a 
+                          v-if="article.url"
+                          :href="article.url" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          class="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+                        >
+                          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                          </svg>
+                          View Article
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -160,98 +194,64 @@
 
           <!-- Sidebar -->
           <div class="space-y-6">
-            <!-- Download Actions -->
-            <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-              <div class="bg-gradient-to-r from-green-50 to-emerald-50 px-6 py-4 border-b border-gray-100">
-                <h3 class="font-bold text-gray-900 flex items-center">
-                  <div class="bg-green-100 rounded-lg p-2 mr-3">
-                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
-                  </div>
-                  Download Options
-                </h3>
-              </div>
-              <div class="p-6 space-y-4">
-                <button 
-                  @click="downloadPDF"
-                  class="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center"
-                >
-                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                  </svg>
-                  Download PDF
-                </button>
-                
-                <button 
-                  @click="viewOnArxiv"
-                  class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center"
-                >
-                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                  </svg>
-                  View on arXiv
-                </button>
-              </div>
-            </div>
-
             <!-- Document Information -->
             <div class="space-y-4">
-              <!-- Journal Information -->
-              <div v-if="document.journal" class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+              <!-- Print ISSN -->
+              <div v-if="document.pIssn" class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
                 <div class="bg-gradient-to-r from-purple-50 to-indigo-50 px-6 py-4 border-b border-gray-100">
                   <h3 class="font-bold text-gray-900 flex items-center">
                     <div class="bg-purple-100 rounded-lg p-2 mr-3">
                       <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                       </svg>
                     </div>
-                    Journal Reference
+                    Print ISSN
                   </h3>
                 </div>
                 <div class="p-6">
-                  <p class="text-gray-800 font-medium">{{ document.journal }}</p>
+                  <p class="text-gray-800 font-medium font-mono">{{ document.pIssn }}</p>
                 </div>
               </div>
 
-              <!-- Update Date -->
-              <div v-if="document.update_date" class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+              <!-- Electronic ISSN -->
+              <div v-if="document.eIssn" class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
                 <div class="bg-gradient-to-r from-teal-50 to-cyan-50 px-6 py-4 border-b border-gray-100">
                   <h3 class="font-bold text-gray-900 flex items-center">
                     <div class="bg-teal-100 rounded-lg p-2 mr-3">
                       <svg class="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                       </svg>
                     </div>
-                    Last Updated
+                    Electronic ISSN
                   </h3>
                 </div>
                 <div class="p-6">
-                  <p class="text-gray-800 font-medium">{{ formatDate(document.update_date) }}</p>
+                  <p class="text-gray-800 font-medium font-mono">{{ document.eIssn }}</p>
                 </div>
               </div>
 
-              <!-- DOI -->
-              <div v-if="document.doi" class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+              <!-- Actions -->
+              <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
                 <div class="bg-gradient-to-r from-orange-50 to-red-50 px-6 py-4 border-b border-gray-100">
                   <h3 class="font-bold text-gray-900 flex items-center">
                     <div class="bg-orange-100 rounded-lg p-2 mr-3">
                       <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"/>
                       </svg>
                     </div>
-                    DOI Reference
+                    Quick Actions
                   </h3>
                 </div>
-                <div class="p-6">
-                  <a 
-                    :href="document.doi" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    class="text-blue-600 hover:text-blue-800 font-medium underline decoration-2 underline-offset-2 hover:decoration-blue-800 transition-colors"
+                <div class="p-6 space-y-3">
+                  <button 
+                    @click="copyLink"
+                    class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium px-4 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center"
                   >
-                    View DOI Link
-                  </a>
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    </svg>
+                    Copy Link
+                  </button>
                 </div>
               </div>
             </div>
@@ -314,15 +314,23 @@ const { getPaperDetail } = usePapers()
 
 // Types
 interface DocumentData {
-  id: string
+  id: number
+  name: string
+  institution: string
+  imageUrl: string
+  url: string
+  accreditation: string
+  subjectArea: string
+  pIssn: string
+  eIssn: string
+  articles: Article[]
+}
+
+interface Article {
   title: string
-  abstract: string
-  authors: string
-  submitter?: string
-  doi?: string | null
-  update_date: string
-  journal?: string
-  highlight?: Record<string, string[]>
+  institution: string
+  url: string
+  year: number
 }
 
 // Composables
@@ -340,11 +348,6 @@ definePageMeta({
   layout: 'global',
 })
 
-// Computed properties
-const arxivId = computed(() => route.params.id as string)
-const arxivUrl = computed(() => `https://arxiv.org/abs/${arxivId.value}`)
-const pdfUrl = computed(() => `https://arxiv.org/pdf/${arxivId.value}.pdf`)
-
 // Methods
 const fetchDocument = async () => {
   try {
@@ -359,7 +362,7 @@ const fetchDocument = async () => {
     
     // Handle Nuxt reactive response
     if (response.data.value) {
-      document.value = response.data.value
+      document.value = response.data.value as DocumentData
     } else if (response.error.value) {
       error.value = response.error.value.message || 'Failed to fetch document'
     } else {
@@ -373,13 +376,10 @@ const fetchDocument = async () => {
   }
 }
 
-const downloadPDF = () => {
-  window.open(pdfUrl.value, '_blank')
-  showToastMessage('Download started!')
-}
-
-const viewOnArxiv = () => {
-  window.open(arxivUrl.value, '_blank')
+const viewOriginalSource = () => {
+  if (document.value?.url) {
+    window.open(document.value.url, '_blank')
+  }
 }
 
 const copyLink = async () => {
@@ -392,25 +392,18 @@ const copyLink = async () => {
   }
 }
 
+const handleImageError = (event: Event) => {
+  const target = event.target as HTMLImageElement
+  target.style.display = 'none'
+  console.warn('Failed to load image:', target.src)
+}
+
 const showToastMessage = (message: string) => {
   toastMessage.value = message
   showToast.value = true
   setTimeout(() => {
     showToast.value = false
   }, 3000)
-}
-
-const formatDate = (dateString: string): string => {
-  try {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
-  } catch {
-    return dateString
-  }
 }
 
 // Lifecycle
@@ -420,11 +413,11 @@ onMounted(() => {
 
 // SEO
 useHead({
-  title: computed(() => document.value?.title || `arXiv:${route.params.id}`),
+  title: computed(() => document.value?.name || `Document ${route.params.id}`),
   meta: [
     {
       name: 'description',
-      content: computed(() => document.value?.abstract || 'Academic paper from arXiv')
+      content: computed(() => `${document.value?.name || 'Document'} - ${document.value?.institution || 'Academic Institution'}`)
     }
   ]
 })

@@ -262,24 +262,6 @@ const results = reactive({
   ]
 })
 
-const gotoPage = () => {
-  router.push('/')
-}
-
-const getParticleStyle = (index: number) => {
-  const x = Math.random() * 100
-  const y = Math.random() * 100
-  const delay = Math.random() * 5
-  const duration = 3 + Math.random() * 4
-  
-  return {
-    left: `${x}%`,
-    top: `${y}%`,
-    animationDelay: `${delay}s`,
-    animationDuration: `${duration}s`
-  }
-}
-
 const triggerFileUpload = () => {
   fileInput.value?.click()
 }
@@ -357,6 +339,17 @@ const getStatusText = (similarity: number) => {
   if (similarity >= 25) return 'Peringatan Kesamaan Sedang'
   return 'Dokumen Original'
 }
+
+// use seo
+useHead({
+  title: 'Cek Dokumen -DocuMen',
+  meta: [
+    { name: 'description', content: 'Cek dokumen Anda untuk plagiarisme dengan akurasi tinggi menggunakan teknolog canggih. Dapatkan laporan detail dalam hitungan detik.' },
+    { name: 'keywords', content: 'plagiarisme, cek dokumen, teknologi, analisis dokumen' },
+    { name: 'author', content: 'DocuMEN' }
+  ]
+})
+
 </script>
 
 <style scoped>

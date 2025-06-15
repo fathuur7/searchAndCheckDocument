@@ -10,8 +10,23 @@ export function usePapers() {
     return { data, error, pending };
   };
 
-  const searchPapers = async (query: string , limit = 4) => {
+  const getAllArtikels = async (page = 1, limit = 10) => {
+    const { data, error, pending } = await useFetch(`${API_BASE}/getAllArtikel`, {
+      query: { page, limit }
+    });
+    return { data, error, pending };
+  };
+
+
+  const searchJurnal = async (query: string , limit = 4) => {
     const { data, error, pending } = await useFetch(`${API_BASE}/search`, {
+      query: { q: query }
+    });
+    return { data, error, pending };
+  };
+
+  const searchArtikel = async (query: string , limit = 4) => {
+    const { data, error, pending } = await useFetch(`${API_BASE}/searchArticles`, {
       query: { q: query }
     });
     return { data, error, pending };
@@ -29,8 +44,10 @@ export function usePapers() {
 
   return {
     getAllPapers,
-    searchPapers,
+    searchJurnal,
+    searchArtikel,
     getPaperDetail,
+    getAllArtikels,
     getTotalDocuments
   };
 }

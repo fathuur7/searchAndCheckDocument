@@ -40,8 +40,8 @@
             Cek Dokumen
             <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></span>
           </a>
-          <a @click="gotoArtikel()" class="text-gray-300 hover:text-blue-300 transition-all duration-300 font-medium relative group cursor-pointer">
-            Cek Artikel
+          <a @click="gotoJurnal()" class="text-gray-300 hover:text-blue-300 transition-all duration-300 font-medium relative group cursor-pointer">
+            Cek Jurnal
             <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></span>
           </a>
           <button class="relative group bg-gradient-to-r from-blue-500 to-purple-500 text-white px-8 py-3 rounded-full overflow-hidden">
@@ -91,7 +91,7 @@
                   <input
                     v-model="searchQuery"
                     type="text"
-                    placeholder="Cari jurnal..."
+                    placeholder="Cari Artikel..."
                     class="w-full px-6 py-4 bg-transparent text-gray-200 placeholder-gray-400 font-medium focus:outline-none text-lg placeholder-animation"
                   />
                 </div>
@@ -147,7 +147,6 @@
                   <div class="flex items-start space-x-3">
                     <div class="flex-1 min-w-0">
                       <h4 class="font-semibold text-gray-200 text-base group-hover:text-blue-300 transition-colors">
-                        <!-- Jika type article, tampilkan artikel judul -->
                         {{ result.title || result.name }}
                       </h4>
 
@@ -159,29 +158,21 @@
                         {{ result.authors.join(', ') }}
                       </p>
 
-                      <div class="flex items-center mt-2 space-x-2">
+                      <div class="flex items-center mt-2 flex-wrap gap-2">
                         <span v-if="result.score >= 0" class="px-2 py-1 bg-blue-900/50 text-blue-300 rounded text-xs">
-                          {{ (result.score) }}% match
+                          {{ result.score }}% match
                         </span>
 
-                        <span v-if="result.journal" class="px-2 py-1 bg-green-900/50 text-green-300 rounded text-xs">
-                          {{ result.journal }}
+                        
+                        <span v-if="result.year" class="px-2 py-1 bg-gray-700/50 text-gray-300 rounded text-xs">
+                          {{ result.year }}
                         </span>
-
-                        <span v-if="result.update_date" class="px-2 py-1 bg-gray-700/50 text-gray-300 rounded text-xs">
-                          {{ result.update_date.substring(0, 4) }}
-                        </span>
-
-                        <span v-if="result.subject_area" class="px-2 py-1 bg-purple-900/50 text-purple-300 rounded text-xs">
-                          {{ result.subject_area }}
-                        </span>
-
-                        <span v-if="result.accreditation" class="px-2 py-1 bg-yellow-900/50 text-yellow-300 rounded text-xs">
-                          {{ result.accreditation }}
+                        <span v-if="result.journal_name" class="px-2 py-1 bg-green-900/50 text-green-300 rounded text-xs">
+                          Nama Jurnal {{ result.journal_name }}
                         </span>
                       </div>
 
-                      <!-- Jika hasil dari artikel, tampilkan daftar artikel yang cocok -->
+                      <!-- Matched articles -->
                       <div v-if="result.matched_articles?.length" class="mt-3 space-y-1">
                         <div 
                           v-for="(article, aidx) in result.matched_articles"
@@ -194,16 +185,17 @@
                       </div>
                     </div>
 
-                    <!-- Tombol -->
+                    <!-- Tombol
                     <button
                       @click="gotoDocument(result.id)"
                       class="text-blue-400 hover:text-blue-300 text-xs font-medium rounded-full px-4 py-1 border border-blue-500/50 hover:border-blue-500/70 focus:outline-none"
                     >
                       Lihat Detail
-                    </button>
+                    </button> -->
                   </div>
                 </div>
               </div>
+
 
 
               <!-- Pagination -->
@@ -320,15 +312,15 @@
 
 <script setup lang="ts">
 import { usePapers } from '@/composables/usePapers'
-const { getAllPapers, getTotalDocuments } = usePapers()
+const { getAllArtikels, getTotalDocuments } = usePapers()
 
 // Reactive data
 const searchQuery = ref('')
-const totalDocuments = ref(999) // Default value for demo
+const totalDocuments = ref(9003) // Default value for demo
 const results = ref<any[]>([])
 const loading = ref(false)
 const currentPage = ref(1)
-const itemsPerPage = 4
+const itemsPerPage = 2
 
 const gotoPage = () => {
   useRouter().push('/cekDokumen')
@@ -338,8 +330,8 @@ const gotoDocument = (id: string) => {
   useRouter().push(`/doc/${id}`)
 }
 
-const gotoArtikel = () => {
-  useRouter().push('/cekArtikel')
+const gotoJurnal = () => {
+  useRouter().push('/')
 }
 
 // Computed properties for pagination
@@ -442,25 +434,28 @@ onMounted(async () => {
   loading.value = true
 
   try {
-    // Try to fetch real data, fallback to sample data
     if (typeof getTotalDocuments === 'function') {
       const total = await getTotalDocuments()
-      totalDocuments.value = (total.data.value as { totalJournals ?: number })?.totalJournals ?? 999
-      
-      const papers = await getAllPapers(1, 20) // Fetch more for pagination demo
-      results.value = (papers.data.value as { results?: any[] })?.results || generateSampleData()
+      totalDocuments.value = 9003
+    }
+
+    if (typeof getAllArtikels === 'function') {
+      const papers = await getAllArtikels(1)
+      // Jika API mengembalikan array langsung:
+      results.value = Array.isArray(papers.data.value)
+        ? papers.data.value
+        : generateSampleData()
     } else {
-      // Use sample data for demo
       results.value = generateSampleData()
     }
   } catch (e) {
-      console.error('Failed to load data:', e)
-      // Fallback to sample data
-      results.value = generateSampleData()
-    } finally {
-        loading.value = false
+    console.error('Failed to load data:', e)
+    results.value = generateSampleData()
+  } finally {
+    loading.value = false
   }
 })
+
 
 // Search logic
 const performSearch = async () => {
@@ -471,7 +466,7 @@ const performSearch = async () => {
   
   try {
     if (typeof usePapers === 'function') {
-      const { data } = await usePapers().searchJurnal(searchQuery.value, 20)
+      const { data } = await usePapers().searchArtikel(searchQuery.value, 20)
       results.value = (data.value && typeof data.value === 'object' && 'results' in data.value)
       ? (data.value as { results: any[] }).results
         : generateSampleData()
@@ -505,7 +500,7 @@ const getParticleStyle = (index: number) => {
 }
 // USE SEO
 useHead({
-  title: 'Home',
+  title: 'Cek Artikel - DocuSearch',
   meta: [
     {
       name: 'description',
